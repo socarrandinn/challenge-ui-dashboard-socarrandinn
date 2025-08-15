@@ -4,7 +4,7 @@ import {
 } from "@/interfaces/air-quality.interface";
 import { useMemo } from "react";
 import { formatDate } from "@/lib/utils";
-import { INTERVALS_ENUM } from "../../constants/air-quality.enum";
+import { INTERVALS_ENUM, VALUES_KEY_LABELS } from "../../constants/air-quality.enum";
 
 const xaxisConfig: Record<string, any> = {
   Monthly: {
@@ -44,7 +44,7 @@ const useAirQualityHistogram = ({ data, interval, parameter }: Props) => {
   const series = useMemo(() => {
     return [
       {
-        name: parameter,
+        name: VALUES_KEY_LABELS[parameter]?.label || 'CO',
         data: air || [],
       },
     ];

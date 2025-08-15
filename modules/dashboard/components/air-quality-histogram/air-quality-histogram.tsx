@@ -21,9 +21,7 @@ const AirQualityHistogram = ({ ...props }: Props) => {
     [series]
   );
 
-  console.log(props?.data, "AAAA");
-
-  const emptyData = <>VAcio</>;
+  const emptyData = <>Sin datos</>;
 
   const content = useMemo(() => {
     return (
