@@ -1,0 +1,28 @@
+@layer utilities {
+  .bg-card-secondary {
+    background: var(--card-secondary);
+    transition: background 0.2s ease-in-out;
+  }
+
+  .bg-orange-light {
+    background: var(--orange-light);
+    transition: background 0.2s ease-in-out;
+  }
+
+  .bg-orange-dark {
+    background: var(--orange-dark);
+    transition: background 0.2s ease-in-out;
+  }
+
+  /* text color */
+
+  .text-card-secondary {
+    color: var(--card-secondary);
+  }
+  .text-orange-dark {
+    color: var(--orange-dark);
+  }
+  .text-orange-light {
+    color: var(--orange-light);
+  }
+}
