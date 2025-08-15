@@ -143,8 +143,7 @@ export class ApiService {
         if (error.status) {
           // HTTP response error
           errorResponse = {
-            error: error.error,
-            status: error.status,
+            ...error,
           };
         } else if (error.message === "Request timeout") {
           errorResponse = {

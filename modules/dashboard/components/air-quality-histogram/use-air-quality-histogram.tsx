@@ -3,8 +3,8 @@ import {
   IAirQualityTimeLine,
 } from "@/interfaces/air-quality.interface";
 import { useMemo } from "react";
-import { INTERVALS_ENUM } from "../chart-area-interactive";
 import { formatDate } from "@/lib/utils";
+import { INTERVALS_ENUM } from "../../constants/air-quality.enum";
 
 const xaxisConfig: Record<string, any> = {
   Monthly: {
