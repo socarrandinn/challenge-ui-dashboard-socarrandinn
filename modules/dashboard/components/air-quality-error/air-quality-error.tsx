@@ -1,91 +1,81 @@
 "use client";
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { AlertCircle, RefreshCw, Home } from "lucide-react";
+import { AlertCircleIcon, RefreshCw } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 
-type ErrorComponentProps = {
-  error?: Error | any;
+interface HandleErrorProps {
+  error?: Error;
   title?: string;
   description?: string;
-  showRetry?: boolean;
-  showHome?: boolean;
+  showRefresh?: boolean;
   onRetry?: () => void;
-  className?: string;
-};
+}
 
-export const AirQualityError = ({
+export default function HandleError({
   error,
-  title = "Error al cargar los datos",
-  description,
-  showRetry = true,
-  showHome = false,
+  title = "Ocurrió un error",
+  description = "Ha ocurrido un problema al cargar los datos. Por favor, inténtalo de nuevo.",
+  showRefresh = true,
   onRetry,
-  className = "",
-}: ErrorComponentProps) => {
+}: HandleErrorProps) {
   const router = useRouter();
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
-  const handleRetry = () => {
-    if (onRetry) {
-      onRetry();
-    } else {
-      window.location.reload();
+  const handleRefresh = async () => {
+    setIsRefreshing(true);
+
+    try {
+      if (onRetry) {
+        await onRetry();
+      } else {
+        // Recargar la página actual
+        router.refresh();
+        // Alternativa: window.location.reload() para recarga completa
+      }
+    } catch (err) {
+      console.error("Error al recargar:", err);
+    } finally {
+      setIsRefreshing(false);
     }
   };
 
-  const handleGoHome = () => {
-    router.push("/");
-  };
-
-  const getErrorMessage = () => {
-    if (description) return description;
-
-    if (error?.message) return error.message;
-
-    if (typeof error === "string") return error;
-
-    return "Ha ocurrido un error inesperado al cargar la información de calidad del aire.";
-  };
-
   return (
-    <div className={`flex items-center justify-center p-4 ${className}`}>
-      <Card className="w-full max-w-md">
-        <Alert className="border-0">
-          <AlertCircle className="h-4 w-4" />
-          <AlertTitle className="mb-2">{title}</AlertTitle>
-          <AlertDescription className="mb-4">
-            {getErrorMessage()}
-          </AlertDescription>
+    <div className="mx-4 md:mx-6">
+      <Alert variant="destructive">
+        <AlertCircleIcon className="h-4 w-4" />
+        <AlertTitle>{title}</AlertTitle>
+        <AlertDescription>
+          <p className="mb-3">{description}</p>
 
-          <div className="flex flex-col sm:flex-row gap-2">
-            {showRetry && (
-              <Button
-                onClick={handleRetry}
-                variant="default"
-                size="sm"
-                className="flex items-center gap-2"
-              >
-                <RefreshCw className="h-4 w-4" />
-                Reintentar
-              </Button>
-            )}
+          {/* Mostrar detalles del error en desarrollo */}
+          {process.env.NODE_ENV === "development" && error && (
+            <details className="mt-2 mb-3">
+              <summary className="cursor-pointer text-sm font-medium">
+                Detalles del error (solo en desarrollo)
+              </summary>
+              <pre className="mt-2 text-xs bg-red-50 p-2 rounded overflow-x-auto">
+                {error.message}
+                {error.stack && `\n\n${error.stack}`}
+              </pre>
+            </details>
+          )}
 
-            {showHome && (
-              <Button
-                onClick={handleGoHome}
-                variant="outline"
-                size="sm"
-                className="flex items-center gap-2"
-              >
-                <Home className="h-4 w-4" />
-                Ir al inicio
-              </Button>
-            )}
-          </div>
-        </Alert>
-      </Card>
+          {showRefresh && (
+            <button
+              onClick={handleRefresh}
+              disabled={isRefreshing}
+              className="inline-flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-red-700 bg-red-50 border border-red-200 rounded-md hover:bg-red-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            >
+              <RefreshCw
+                className={`h-3 w-3 ${isRefreshing ? "animate-spin" : ""}`}
+              />
+              {isRefreshing ? "Recargando..." : "Reintentar"}
+            </button>
+          )}
+        </AlertDescription>
+      </Alert>
     </div>
   );
-};
+}

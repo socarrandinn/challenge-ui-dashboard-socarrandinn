@@ -26,6 +26,8 @@ import {
   IconChevronsRight,
   IconLayoutColumns,
   IconSearch,
+  IconChevronUp,
+  IconSelector,
 } from "@tabler/icons-react";
 import {
   ColumnDef,
@@ -107,7 +109,7 @@ const DataTable = ({
 
   const table = useReactTable({
     data,
-    columns, // ✅ Corregido: usar las columnas del prop
+    columns,
     state: {
       sorting,
       columnVisibility,
@@ -119,6 +121,7 @@ const DataTable = ({
     getRowId: (row) => row._id.toString(),
     enableRowSelection: true,
     enableGlobalFilter: true,
+    enableSorting: true, // ✅ Habilitar sorting globalmente
     onRowSelectionChange: setRowSelection,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -145,13 +148,24 @@ const DataTable = ({
     }
   }
 
+  const getSortIcon = (column: any) => {
+    const sortDirection = column.getIsSorted();
+
+    if (sortDirection === "asc") {
+      return <IconChevronUp className="h-4 w-4" />;
+    } else if (sortDirection === "desc") {
+      return <IconChevronDown className="h-4 w-4" />;
+    } else {
+      return <IconSelector className="h-4 w-4 opacity-50" />;
+    }
+  };
+
   return (
     <section className="">
       <Card>
         <div className="flex items-center justify-between px-4 lg:px-6 py-4">
           <h2 className="text-lg font-semibold">{title}</h2>
           <div className="flex items-center gap-2">
-            {/* ✅ Nuevo: Buscador global */}
             <div className="relative">
               <IconSearch className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
               <Input
@@ -172,27 +186,20 @@ const DataTable = ({
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-56">
-                {table
-                  .getAllColumns()
-                  /*  .filter(
-                    (column) =>
-                      typeof column.accessorFn !== "undefined" &&
-                      column.getCanHide()
-                  ) */
-                  .map((column: any) => {
-                    return (
-                      <DropdownMenuCheckboxItem
-                        key={column.id}
-                        className="capitalize"
-                        checked={column.getIsVisible()}
-                        onCheckedChange={(value) =>
-                          column.toggleVisibility(!!value)
-                        }
-                      >
-                        {column.id}
-                      </DropdownMenuCheckboxItem>
-                    );
-                  })}
+                {table.getAllColumns().map((column: any) => {
+                  return (
+                    <DropdownMenuCheckboxItem
+                      key={column.id}
+                      className="capitalize"
+                      checked={column.getIsVisible()}
+                      onCheckedChange={(value) =>
+                        column.toggleVisibility(!!value)
+                      }
+                    >
+                      {column.id}
+                    </DropdownMenuCheckboxItem>
+                  );
+                })}
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
@@ -212,13 +219,30 @@ const DataTable = ({
                     <TableRow key={headerGroup.id}>
                       {headerGroup.headers.map((header) => {
                         return (
-                          <TableHead key={header.id} colSpan={header.colSpan}>
-                            {header.isPlaceholder
-                              ? null
-                              : flexRender(
+                          <TableHead
+                            key={header.id}
+                            colSpan={header.colSpan}
+                            className={
+                              header.column.getCanSort()
+                                ? "cursor-pointer select-none hover:bg-muted/50 transition-colors"
+                                : ""
+                            }
+                            onClick={header.column.getToggleSortingHandler()}
+                          >
+                            {header.isPlaceholder ? null : (
+                              <div className="flex items-center gap-2">
+                                {flexRender(
                                   header.column.columnDef.header,
                                   header.getContext()
                                 )}
+
+                                {header.column.getCanSort() && (
+                                  <span className="ml-auto">
+                                    {getSortIcon(header.column)}
+                                  </span>
+                                )}
+                              </div>
+                            )}
                           </TableHead>
                         );
                       })}

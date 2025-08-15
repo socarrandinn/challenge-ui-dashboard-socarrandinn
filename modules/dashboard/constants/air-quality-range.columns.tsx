@@ -17,6 +17,7 @@ import { VALUES_KEY_LABELS } from "./air-quality.enum";
 const airColumns = Object?.entries(VALUES_KEY_LABELS)?.map(([key, value]) => ({
   accessorKey: key,
   header: value.label,
+  enableSorting: false,
   cell: ({ row }) => {
     // @ts-ignore
     return <>{(row.original[key] as number) ?? 0}</>;
@@ -28,6 +29,7 @@ export const airQualityRangeColumn: ColumnDef<IZodAirQualityRangeSchema>[] = [
     id: "drag",
     header: () => null,
     cell: ({ row }) => <DragHandle id={row.original._id} />,
+    enableSorting: false,
   },
   {
     id: "select",
@@ -76,6 +78,7 @@ export const airQualityRangeColumn: ColumnDef<IZodAirQualityRangeSchema>[] = [
     cell: ({ row }) => {
       return <DateValue value={row?.original?.createdAt} />;
     },
+    enableSorting: true,
   },
   {
     id: "actions",

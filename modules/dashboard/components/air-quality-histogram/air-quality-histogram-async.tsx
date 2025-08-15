@@ -2,6 +2,7 @@ import { IAirQualitySummary } from "@/interfaces/air-quality.interface";
 import { INTERVALS_ENUM } from "../../constants/air-quality.enum";
 import { searchAirQualityTimeLine } from "../../services/dashbaord.service";
 import AirQualityHistogram from "./air-quality-histogram";
+import HandleError from "../air-quality-error/air-quality-error";
 
 type Props = {
   query: any;
@@ -14,7 +15,11 @@ export const AirQualityHistogramAsync = async ({
   interval,
   parameter,
 }: Props) => {
-  const { data: timeline } = await searchAirQualityTimeLine(query);
+  const { data: timeline, error } = await searchAirQualityTimeLine(query);
+
+  if (error) {
+    return <HandleError />;
+  }
 
   return (
     <AirQualityHistogram
