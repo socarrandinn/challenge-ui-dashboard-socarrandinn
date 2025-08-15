@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { IconCalendar, IconCaretDownFilled } from "@tabler/icons-react";
-import { useCallback, useState } from "react";
+import { useCallback, useState, useEffect } from "react";
 
 import {
   DropdownMenu,
@@ -21,33 +21,85 @@ export function FieldDateRangeFilter({ filter, title }: FilterProps) {
   const pathname = usePathname();
   const { replace } = useRouter();
 
-  // Lee los parámetros iniciales
-  const fromParam = searchParams.get(`${filter?.key}_from`);
-  const toParam = searchParams.get(`${filter?.key}_to`);
+  // Función auxiliar para crear fechas en zona horaria local
+  const createLocalDate = (dateString: string): Date => {
+    const [year, month, day] = dateString.split("-").map(Number);
+    return new Date(year, month - 1, day); // month - 1 porque los meses en JS van de 0-11
+  };
 
-  const [date, setDate] = useState<DateRange | undefined>({
-    from: fromParam ? new Date(fromParam) : undefined,
-    to: toParam ? new Date(toParam) : undefined,
-  });
+  const parseRangeParam = useCallback(
+    (rangeParam: string | null): DateRange | undefined => {
+      if (!rangeParam) return undefined;
+
+      const dates = rangeParam.split("_");
+      if (dates.length === 2) {
+        try {
+          const fromDate = createLocalDate(dates[0]);
+          const toDate = createLocalDate(dates[1]);
+
+          if (!isNaN(fromDate.getTime()) && !isNaN(toDate.getTime())) {
+            return {
+              from: fromDate,
+              to: toDate,
+            };
+          }
+        } catch (error) {
+          console.error("Error parsing date range:", error);
+        }
+      }
+
+      return undefined;
+    },
+    []
+  );
+
+  const rangeParam = searchParams.get("range");
+
+  const getDateFromParams = useCallback((): DateRange | undefined => {
+    if (rangeParam) {
+      const parsedRange = parseRangeParam(rangeParam);
+      if (parsedRange) return parsedRange;
+    }
+    return undefined;
+  }, [rangeParam, parseRangeParam]);
+
+  const [date, setDate] = useState<DateRange | undefined>(getDateFromParams);
+
+  useEffect(() => {
+    const newDate = getDateFromParams();
+    setDate(newDate);
+  }, [getDateFromParams]);
 
   const updateDateParams = useCallback(
     (newDate: DateRange | undefined) => {
       const params = new URLSearchParams(searchParams);
 
       if (newDate?.from && newDate?.to) {
-        const dateRange = `${format(
-          newDate.from.toDateString(),
+        const dateRange = `${format(newDate.from, "yyyy-MM-dd")}_${format(
+          newDate.to,
           "yyyy-MM-dd"
-        )}_${format(newDate.to.toDateString(), "yyyy-MM-dd")}`;
-        params.set(filter?.key, dateRange);
+        )}`;
+
+        // Actualiza el parámetro range
+        params.set("range", dateRange);
+
+        if (filter?.key) {
+          params.set(filter.key, dateRange);
+        }
       } else if (newDate?.from) {
-        params.set(
-          filter?.key,
-          format(newDate.from.toDateString(), "yyyy-MM-dd")
-        );
+        const singleDate = format(newDate.from, "yyyy-MM-dd");
+
+        if (filter?.key) {
+          params.set(filter.key, singleDate);
+        }
+        params.delete("range");
       } else {
-        params.delete(filter?.key);
+        params.delete("range");
+        if (filter?.key) {
+          params.delete(filter.key);
+        }
       }
+
       replace(`${pathname}?${params.toString()}`);
     },
     [searchParams, replace, pathname, filter?.key]
@@ -59,9 +111,12 @@ export function FieldDateRangeFilter({ filter, title }: FilterProps) {
   };
 
   const handleClean = useCallback(() => {
-    if (!filter?.key) return;
     const params = new URLSearchParams(searchParams);
-    params.delete(filter?.key);
+    params.delete("range");
+    if (filter?.key) {
+      params.delete(filter.key);
+    }
+
     replace(`${pathname}?${params.toString()}`);
     setDate({ from: undefined, to: undefined });
   }, [searchParams, pathname, replace, filter?.key]);
@@ -80,11 +135,11 @@ export function FieldDateRangeFilter({ filter, title }: FilterProps) {
             {date?.from ? (
               date.to ? (
                 <>
-                  {format(date.from, "LLL dd, y")} -{" "}
-                  {format(date.to, "LLL dd, y")}
+                  {format(date.from, "LLL dd, yyyy")} -{" "}
+                  {format(date.to, "LLL dd, yyyy")}
                 </>
               ) : (
-                format(date.from, "LLL dd, y")
+                format(date.from, "LLL dd, yyyy")
               )
             ) : (
               <span>{title}</span>

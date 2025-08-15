@@ -7,7 +7,7 @@ export const navigation: Record<string, IMenu[]> = {
   navMain: [
     {
       title: "Dashboard",
-      url: "/",
+      url: "/?range=2004-03-01_2004-05-01",
       icon: IconDashboard,
     },
     {
