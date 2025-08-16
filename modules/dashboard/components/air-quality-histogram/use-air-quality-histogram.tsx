@@ -54,12 +54,13 @@ const useAirQualityHistogram = () => {
   const options = useMemo(
     () => ({
       theme: {
-        mode: theme,
+        mode: theme === "dark" ? "dark" : "light",
       },
       title: {
         align: "left",
         style: {
           fontSize: 20,
+          color: 'var(--background)',
         },
       },
       chart: {
@@ -68,27 +69,35 @@ const useAirQualityHistogram = () => {
           show: true,
           autoSelected: "zoom",
         },
+        background: "transparent",
       },
       yaxis: {
         min: 0,
         forceNiceScale: true,
         labels: {
-          formatter: (value: number) => {
-            return value;
+          style: {
+            colors:"var(--foreground)",
           },
+          formatter: (value: number) => value,
         },
       },
       labels,
-      xaxis: xaxisConfig[interval as string] || {
-        type: "datetime",
+      xaxis: {
+        ...(xaxisConfig[interval as string] || { type: "datetime" }),
+        labels: {
+          style: {
+            colors: "var(--foreground)",
+          },
+        },
       },
       markers: { size: 0 },
       tooltip: { shared: false },
       dataLabels: {
         enabled: true,
-        formatter: (value: number) => {
-          return value;
+        style: {
+          colors: ["var(--primary)"],
         },
+        formatter: (value: number) => value,
       },
     }),
     [theme, labels, interval]
