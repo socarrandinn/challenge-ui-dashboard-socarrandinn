@@ -50,7 +50,7 @@ export const metadata: Metadata = {
     description: "Dashboard APP - Panel de control y análisis de datos",
     images: [
       {
-        url: "/og-image.png", // Asegúrate de tener esta imagen
+        url: "/opengraph-image.png",
         width: 1200,
         height: 630,
         alt: "Dashboard APP",
@@ -62,7 +62,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Dashboard APP",
     description: "Dashboard APP - Panel de control y análisis de datos",
-    images: ["/og-image.png"],
+    images: ["/opengraph-image.png"],
   },
 
   robots: {
