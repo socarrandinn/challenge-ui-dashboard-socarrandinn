@@ -23,7 +23,7 @@ export default function UserMenu() {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="h-auto p-0 hover:bg-transparent">
-          <Avatar className="w-10 h-10">
+          <Avatar className="w-5 h-5">
             <AvatarImage src="/images/avatar.webp" alt="Profile image" />
             <AvatarFallback>KK</AvatarFallback>
           </Avatar>

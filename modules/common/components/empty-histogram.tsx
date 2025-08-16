@@ -8,17 +8,17 @@ const EmptyHistogram = ({
 }) => {
   return (
     <div
-      className="flex flex-col items-center justify-center   rounded-lg bg-gray-50/50 p-8"
+      className="flex flex-col items-center justify-center rounded-lg p-8"
       style={{ height }}
     >
       <div className="flex flex-col items-center text-center space-y-4">
-        <div className="p-3 bg-gray-100 rounded-full">
-          <Icon className="h-12 w-12 text-gray-400" />
+        <div className="p-3 bg-gray-100 dark:bg-gray-700 rounded-full">
+          <Icon className="h-12 w-12 text-gray-400 dark:text-gray-200" />
         </div>
 
         <div className="space-y-2">
-          <h3 className="text-lg font-medium text-gray-900">{title}</h3>
-          <p className="text-sm text-gray-500 max-w-sm">{description}</p>
+          <h3 className="text-lg font-medium text-gray-900 dark:text-white">{title}</h3>
+          <p className="text-sm text-gray-500 dark:text-gray-300 max-w-sm">{description}</p>
         </div>
       </div>
     </div>

@@ -50,13 +50,13 @@ export const AirQualitySummary = ({ summary, operator, isLoading }: Props) => {
   return (
     <RadioGroup
       className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 2xl:grid-cols-7 px-4 md:px-6 gap-2"
-      value={currentParameter} // Usar el valor de los searchParams
+      value={currentParameter}
       onValueChange={handleChange}
     >
       {Object?.entries(VALUES_KEY_LABELS)?.map(([key, value]) => (
         <Card
           key={`${id}-${key}`}
-          className="border-white has-data-[state=checked]:border-primary/50 relative flex w-full items-start gap-2 rounded-md border-4 p-4 shadow-xs outline-none cursor-pointer hover:bg-muted"
+          className="has-data-[state=checked]:border-primary/50 relative flex w-full items-start gap-2 rounded-md border-2 p-4 shadow-xs outline-none cursor-pointer hover:bg-sidebar-accent"
           onClick={() => handleCardClick(key)}
         >
           <RadioGroupItem

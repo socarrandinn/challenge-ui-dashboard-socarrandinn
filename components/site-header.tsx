@@ -1,6 +1,7 @@
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import UserMenu from "./core/user-menu/user-menu";
+import { ThemeToggle } from "./core/theme-toggle";
 
 export function SiteHeader() {
   return (
@@ -12,6 +13,7 @@ export function SiteHeader() {
           className="mx-2 data-[orientation=vertical]:h-4"
         />
         <h1 className="text-base font-medium flex-1">Dashboard</h1>
+        <ThemeToggle />
         <UserMenu />
       </div>
     </header>

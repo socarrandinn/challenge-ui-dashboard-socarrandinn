@@ -6,6 +6,7 @@ import { useMemo } from "react";
 import { formatDate } from "@/lib/utils";
 import { VALUES_KEY_LABELS } from "../../constants/air-quality.enum";
 import { useFindAirQualityHistogram } from "../../hooks/use-find-air-quality-histogram";
+import { useTheme } from "next-themes";
 
 const xaxisConfig: Record<string, any> = {
   Monthly: {
@@ -18,8 +19,8 @@ const xaxisConfig: Record<string, any> = {
 
 const useAirQualityHistogram = () => {
   const { data, isLoading, interval, parameter } = useFindAirQualityHistogram();
+  const { theme } = useTheme();
 
-  console.log(data,'HISTOGRAM')
   const { air } = useMemo(() => {
     const air: number[] = [];
 
@@ -52,6 +53,9 @@ const useAirQualityHistogram = () => {
 
   const options = useMemo(
     () => ({
+      theme: {
+        mode: theme,
+      },
       title: {
         align: "left",
         style: {
@@ -87,7 +91,7 @@ const useAirQualityHistogram = () => {
         },
       },
     }),
-    [labels, interval]
+    [theme, labels, interval]
   );
 
   return {

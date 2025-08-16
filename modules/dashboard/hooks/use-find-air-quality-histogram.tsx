@@ -24,7 +24,6 @@ export const useFindAirQualityHistogram = () => {
   const query = useQuery({
     queryKey: [AIR_QUALITY_SUMMARY, queryParams],
     queryFn: fetch,
-    refetchInterval: 1000,
   });
   return {
     ...query,

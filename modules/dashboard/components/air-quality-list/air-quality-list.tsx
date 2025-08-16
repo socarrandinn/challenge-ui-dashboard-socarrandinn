@@ -5,7 +5,7 @@ import { useFindAirQualityRange } from "../../hooks/use-find-air-quality-range";
 
 const AirQualityList = () => {
   const { data, isPending, error, queryParams } = useFindAirQualityRange();
-  console.log(queryParams, "RANGE", isPending);
+
   return (
     <DataTable
       key={JSON.stringify(queryParams)}
