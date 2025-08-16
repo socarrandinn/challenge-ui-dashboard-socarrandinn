@@ -1,7 +1,6 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { IZodAirQualityRangeSchema } from "../schemas/air-quality-range.schema";
-import { DragHandle } from "@/modules/common/constants/id.column";
-import { Checkbox } from "@/components/ui/checkbox";
+
 import { IconDotsVertical } from "@tabler/icons-react";
 import {
   DropdownMenu,
@@ -25,38 +24,6 @@ const airColumns = Object?.entries(VALUES_KEY_LABELS)?.map(([key, value]) => ({
 })) as ColumnDef<IZodAirQualityRangeSchema>[];
 
 export const airQualityRangeColumn: ColumnDef<IZodAirQualityRangeSchema>[] = [
-  {
-    id: "drag",
-    header: () => null,
-    cell: ({ row }) => <DragHandle id={row.original._id} />,
-    enableSorting: false,
-  },
-  {
-    id: "select",
-    header: ({ table }) => (
-      <div className="flex items-center justify-center">
-        <Checkbox
-          checked={
-            table.getIsAllPageRowsSelected() ||
-            (table.getIsSomePageRowsSelected() && "indeterminate")
-          }
-          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-          aria-label="Select all"
-        />
-      </div>
-    ),
-    cell: ({ row }) => (
-      <div className="flex items-center justify-center">
-        <Checkbox
-          checked={row.getIsSelected()}
-          onCheckedChange={(value) => row.toggleSelected(!!value)}
-          aria-label="Select row"
-        />
-      </div>
-    ),
-    enableSorting: false,
-    enableHiding: false,
-  },
   ...airColumns,
   {
     accessorKey: "Date",

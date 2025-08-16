@@ -19,3 +19,20 @@ export const getRangeDate = (range: string): Props => {
     to: formatNewDate,
   };
 };
+
+export const createSafeKey = (params: any) => {
+  if (!params) return "empty";
+
+  const safeParams: Record<string, any> = {};
+  Object.entries(params).forEach(([key, value]) => {
+    if (
+      typeof value === "string" ||
+      typeof value === "number" ||
+      typeof value === "boolean"
+    ) {
+      safeParams[key] = value;
+    }
+  });
+
+  return JSON.stringify(safeParams);
+};

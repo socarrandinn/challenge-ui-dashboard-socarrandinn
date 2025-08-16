@@ -4,7 +4,8 @@ import {
 } from "@/interfaces/air-quality.interface";
 import { useMemo } from "react";
 import { formatDate } from "@/lib/utils";
-import { INTERVALS_ENUM, VALUES_KEY_LABELS } from "../../constants/air-quality.enum";
+import { VALUES_KEY_LABELS } from "../../constants/air-quality.enum";
+import { useFindAirQualityHistogram } from "../../hooks/use-find-air-quality-histogram";
 
 const xaxisConfig: Record<string, any> = {
   Monthly: {
@@ -14,16 +15,15 @@ const xaxisConfig: Record<string, any> = {
     },
   },
 };
-type Props = {
-  data: IAirQualityTimeLine[];
-  interval: INTERVALS_ENUM;
-  parameter: keyof IAirQualitySummary;
-};
-const useAirQualityHistogram = ({ data, interval, parameter }: Props) => {
+
+const useAirQualityHistogram = () => {
+  const { data, isLoading, interval, parameter } = useFindAirQualityHistogram();
+
+  console.log(data,'HISTOGRAM')
   const { air } = useMemo(() => {
     const air: number[] = [];
 
-    data?.forEach((n: IAirQualityTimeLine) => {
+    data?.data?.forEach((n: IAirQualityTimeLine) => {
       air.push(n?.count);
     });
 
@@ -34,7 +34,7 @@ const useAirQualityHistogram = ({ data, interval, parameter }: Props) => {
 
   const labels = useMemo(() => {
     return (
-      data?.map((n: IAirQualityTimeLine) => {
+      data?.data?.map((n: IAirQualityTimeLine) => {
         const d = n?.interval;
         return formatDate(d);
       }) || []
@@ -44,7 +44,7 @@ const useAirQualityHistogram = ({ data, interval, parameter }: Props) => {
   const series = useMemo(() => {
     return [
       {
-        name: VALUES_KEY_LABELS[parameter]?.label || 'CO',
+        name: VALUES_KEY_LABELS[parameter as keyof IAirQualitySummary]?.label,
         data: air || [],
       },
     ];
@@ -93,6 +93,7 @@ const useAirQualityHistogram = ({ data, interval, parameter }: Props) => {
   return {
     options,
     series,
+    isLoading,
   };
 };
 export default useAirQualityHistogram;

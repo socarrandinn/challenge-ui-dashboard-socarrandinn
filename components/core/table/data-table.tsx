@@ -1,20 +1,8 @@
 "use client";
 
 import * as React from "react";
+import { type UniqueIdentifier } from "@dnd-kit/core";
 import {
-  closestCenter,
-  DndContext,
-  KeyboardSensor,
-  MouseSensor,
-  TouchSensor,
-  useSensor,
-  useSensors,
-  type DragEndEvent,
-  type UniqueIdentifier,
-} from "@dnd-kit/core";
-import { restrictToVerticalAxis } from "@dnd-kit/modifiers";
-import {
-  arrayMove,
   SortableContext,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
@@ -69,20 +57,27 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { DraggableRow } from "@/modules/common/common/draggable-row.table";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import HandleError from "@/modules/dashboard/components/air-quality-error/air-quality-error";
+import { Skeleton } from "@/components/ui/skeleton";
 
 type Props<T> = {
   data: T[];
   columns: ColumnDef<T>[];
   title: string;
+  error: any;
+  isLoading: boolean;
 };
 
 const DataTable = ({
   data: initialData,
   columns,
   title = "Table list",
+  error,
+  isLoading,
 }: Props<any>) => {
-  const [data, setData] = React.useState(() => initialData);
+  const data = React.useMemo(() => initialData, [initialData]);
+  const id = React.useId();
   const [rowSelection, setRowSelection] = React.useState({});
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
@@ -95,12 +90,6 @@ const DataTable = ({
     pageIndex: 0,
     pageSize: 10,
   });
-  const sortableId = React.useId();
-  const sensors = useSensors(
-    useSensor(MouseSensor, {}),
-    useSensor(TouchSensor, {}),
-    useSensor(KeyboardSensor, {})
-  );
 
   const dataIds = React.useMemo<UniqueIdentifier[]>(
     () => data?.map(({ _id }) => _id) || [],
@@ -121,7 +110,7 @@ const DataTable = ({
     getRowId: (row) => row._id.toString(),
     enableRowSelection: true,
     enableGlobalFilter: true,
-    enableSorting: true, // ✅ Habilitar sorting globalmente
+    enableSorting: true,
     onRowSelectionChange: setRowSelection,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -137,17 +126,6 @@ const DataTable = ({
     globalFilterFn: "includesString",
   });
 
-  function handleDragEnd(event: DragEndEvent) {
-    const { active, over } = event;
-    if (active && over && active.id !== over.id) {
-      setData((data) => {
-        const oldIndex = dataIds.indexOf(active.id);
-        const newIndex = dataIds.indexOf(over.id);
-        return arrayMove(data, oldIndex, newIndex);
-      });
-    }
-  }
-
   const getSortIcon = (column: any) => {
     const sortDirection = column.getIsSorted();
 
@@ -160,19 +138,67 @@ const DataTable = ({
     }
   };
 
+  const renderSkeletonRows = () => {
+    return Array.from({ length: 10 }).map((_, rowIndex) => (
+      <TableRow key={`${id}-skeleton-${rowIndex}`}>
+        {columns.map((column, columnIndex) => (
+          <TableCell key={`${id}-skeleton-${rowIndex}-${columnIndex}`}>
+            <Skeleton className="h-4 w-full max-w-32" />
+          </TableCell>
+        ))}
+      </TableRow>
+    ));
+  };
+
+  const renderDataRows = () => {
+    if (error) {
+      return (
+        <TableRow className="hover:bg-transparent">
+          <TableCell colSpan={columns.length} className="py-2">
+            <HandleError />
+          </TableCell>
+        </TableRow>
+      );
+    }
+
+    if (table.getRowModel().rows?.length === 0) {
+      return (
+        <TableRow className="hover:bg-transparent">
+          <TableCell colSpan={columns.length} className="h-40 text-center ">
+            <div className="flex flex-col items-center justify-center space-y-2 text-muted-foreground">
+              <IconSearch className="h-8 w-8" />
+              <p className="text-sm font-medium">No hay resultados</p>
+            </div>
+          </TableCell>
+        </TableRow>
+      );
+    }
+
+    return (
+      <SortableContext items={dataIds} strategy={verticalListSortingStrategy}>
+        {table.getRowModel().rows.map((row: any) => (
+          <DraggableRow key={row?._id || row?.id} row={row} />
+        ))}
+      </SortableContext>
+    );
+  };
+
   return (
-    <section className="">
-      <Card>
-        <div className="flex items-center justify-between px-4 lg:px-6 py-4">
-          <h2 className="text-lg font-semibold">{title}</h2>
-          <div className="flex items-center gap-2">
-            <div className="relative">
+    <section>
+      <Card className="gap-2 md:gap-4">
+        <CardHeader className="py-0">
+          <CardTitle>{title}</CardTitle>
+        </CardHeader>
+        {/* filters */}
+        <CardContent>
+          <div className="flex flex-wrap justify-end items-center gap-2">
+            <div className="relative w-full md:w-auto">
               <IconSearch className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
               <Input
                 placeholder="Buscar..."
                 value={globalFilter ?? ""}
                 onChange={(event) => setGlobalFilter(event.target.value)}
-                className="pl-8 w-64"
+                className="pl-8 w-full flex-1 md:w-64"
               />
             </div>
 
@@ -203,75 +229,51 @@ const DataTable = ({
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
-        </div>
+        </CardContent>
+
+        {/* content */}
         <CardContent>
           <div className="overflow-hidden rounded-lg border">
-            <DndContext
-              collisionDetection={closestCenter}
-              modifiers={[restrictToVerticalAxis]}
-              onDragEnd={handleDragEnd}
-              sensors={sensors}
-              id={sortableId}
-            >
-              <Table>
-                <TableHeader className="bg-muted sticky top-0 z-10">
-                  {table.getHeaderGroups().map((headerGroup) => (
-                    <TableRow key={headerGroup.id}>
-                      {headerGroup.headers.map((header) => {
-                        return (
-                          <TableHead
-                            key={header.id}
-                            colSpan={header.colSpan}
-                            className={
-                              header.column.getCanSort()
-                                ? "cursor-pointer select-none hover:bg-muted/50 transition-colors"
-                                : ""
-                            }
-                            onClick={header.column.getToggleSortingHandler()}
-                          >
-                            {header.isPlaceholder ? null : (
-                              <div className="flex items-center gap-2">
-                                {flexRender(
-                                  header.column.columnDef.header,
-                                  header.getContext()
-                                )}
+            <Table>
+              <TableHeader className="bg-muted sticky top-0 z-10">
+                {table.getHeaderGroups().map((headerGroup) => (
+                  <TableRow key={headerGroup.id}>
+                    {headerGroup.headers.map((header) => {
+                      return (
+                        <TableHead
+                          key={header.id}
+                          colSpan={header.colSpan}
+                          className={
+                            header.column.getCanSort()
+                              ? "cursor-pointer select-none hover:bg-muted/50 transition-colors"
+                              : ""
+                          }
+                          onClick={header.column.getToggleSortingHandler()}
+                        >
+                          {header.isPlaceholder ? null : (
+                            <div className="flex items-center gap-2">
+                              {flexRender(
+                                header.column.columnDef.header,
+                                header.getContext()
+                              )}
 
-                                {header.column.getCanSort() && (
-                                  <span className="ml-auto">
-                                    {getSortIcon(header.column)}
-                                  </span>
-                                )}
-                              </div>
-                            )}
-                          </TableHead>
-                        );
-                      })}
-                    </TableRow>
-                  ))}
-                </TableHeader>
-                <TableBody className="**:data-[slot=table-cell]:first:w-8">
-                  {table.getRowModel().rows?.length ? (
-                    <SortableContext
-                      items={dataIds}
-                      strategy={verticalListSortingStrategy}
-                    >
-                      {table.getRowModel().rows.map((row) => (
-                        <DraggableRow key={row.id} row={row} />
-                      ))}
-                    </SortableContext>
-                  ) : (
-                    <TableRow>
-                      <TableCell
-                        colSpan={columns.length}
-                        className="h-24 text-center"
-                      >
-                        Sin resultados
-                      </TableCell>
-                    </TableRow>
-                  )}
-                </TableBody>
-              </Table>
-            </DndContext>
+                              {header.column.getCanSort() && (
+                                <span className="ml-auto">
+                                  {getSortIcon(header.column)}
+                                </span>
+                              )}
+                            </div>
+                          )}
+                        </TableHead>
+                      );
+                    })}
+                  </TableRow>
+                ))}
+              </TableHeader>
+              <TableBody className="**:data-[slot=table-cell]:first:w-8">
+                {isLoading ? renderSkeletonRows() : renderDataRows()}
+              </TableBody>
+            </Table>
           </div>
           <div className="flex items-center justify-between px-4 mt-4">
             <div className="text-muted-foreground hidden flex-1 text-sm lg:flex">

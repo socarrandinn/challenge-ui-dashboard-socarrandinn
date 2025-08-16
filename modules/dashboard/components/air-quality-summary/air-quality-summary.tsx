@@ -12,17 +12,23 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { AirVentIcon } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { Skeleton } from "@/components/ui/skeleton";
+import LongText from "@/components/core/long-text/long-text";
 
 type Props = {
   summary: IAirQualitySummary | null;
   operator: OPERATORS_ENUM;
+  isLoading: boolean;
 };
 
-export const AirQualitySummary = ({ summary, operator }: Props) => {
+export const AirQualitySummary = ({ summary, operator, isLoading }: Props) => {
   const id = useId();
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const { replace } = useRouter();
+
+  // Obtener el valor actual del parámetro desde la URL
+  const currentParameter = searchParams.get("parameter") || "CO";
 
   const handleChange = useCallback(
     (newValue: string) => {
@@ -43,37 +49,51 @@ export const AirQualitySummary = ({ summary, operator }: Props) => {
 
   return (
     <RadioGroup
-      className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 px-4 md:px-6 gap-2"
-      defaultValue="CO"
+      className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 2xl:grid-cols-7 px-4 md:px-6 gap-2"
+      value={currentParameter} // Usar el valor de los searchParams
       onValueChange={handleChange}
     >
       {Object?.entries(VALUES_KEY_LABELS)?.map(([key, value]) => (
         <Card
           key={`${id}-${key}`}
-          className="border-white has-data-[state=checked]:border-primary/50 relative flex w-full items-start gap-2 rounded-md border-4 p-4 shadow-xs outline-none cursor-pointer"
+          className="border-white has-data-[state=checked]:border-primary/50 relative flex w-full items-start gap-2 rounded-md border-4 p-4 shadow-xs outline-none cursor-pointer hover:bg-muted"
           onClick={() => handleCardClick(key)}
         >
           <RadioGroupItem
             value={key}
             id={`${id}-${key}`}
             aria-describedby={`${id}-${key}-description`}
-            className="top-4 right-4 absolute"
+            className="top-4 right-4 absolute hidden"
           />
           <Label htmlFor={`${id}-${key}`} className="cursor-pointer">
-            <div className="flex grow items-center gap-3">
-              <AirVentIcon />
-              <div className="grid grow gap-2">
-                <p className="text-lg"> {value.label}</p>
-                <AirQualityOperatorValue
-                  value={summary?.[key as keyof IAirQualitySummary] || 0}
-                  operator={operator}
-                  className="text-xl md:text-2xl font-bold"
-                />
+            {isLoading ? (
+              <SkeletonItem />
+            ) : (
+              <div className="flex grow items-start gap-3">
+                <AirVentIcon className="w-3 h-3 sm:w-5 sm:h-5" />
+                <div className="grid grow gap-1">
+                  <LongText text={value?.label} lineClamp={1} />
+                  <AirQualityOperatorValue
+                    value={summary?.[key as keyof IAirQualitySummary] || 0}
+                    operator={operator}
+                    className="text-md md:text-xl font-bold"
+                  />
+                </div>
               </div>
-            </div>
+            )}
           </Label>
         </Card>
       ))}
     </RadioGroup>
   );
 };
+
+const SkeletonItem = () => (
+  <div className="flex grow items-start gap-3">
+    <Skeleton className="h-5 w-5 bg-muted" />
+    <div className="grid grow gap-1">
+      <Skeleton className="h-3 w-20 bg-muted" />
+      <Skeleton className="h-7 w-full bg-muted" />
+    </div>
+  </div>
+);

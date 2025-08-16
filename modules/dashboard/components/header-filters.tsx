@@ -20,12 +20,12 @@ const HeaderFiler = () => {
 
   return (
     <header className="lg:px-6 px-4">
-      <Card className="flex flex-row justify-between  py-2 lg:py-4">
-        <CardContent className="flex flex-col flex-1 gap-1">
+      <Card className="flex flex-col md:flex-row md:justify-between py-2 lg:py-4 gap-2 md:gap-4">
+        <CardContent className="flex flex-col flex-1 gap-1 px-4 md:px-6">
           <CardTitle>Dashboard</CardTitle>
           <CardTitle className="font-light">Calidad de aire</CardTitle>
         </CardContent>
-        <CardContent className="flex flex-row gap-2 items-center flex-wrap">
+        <CardContent className="flex flex-row gap-2 items-center flex-wrap px-4 md:px-6">
           <FieldDateRangeFilter
             title="Rango"
             filter={{

@@ -1,18 +1,19 @@
 "use client";
 import DataTable from "@/components/core/table/data-table";
-import { IZodAirQualityRangeSchema } from "../../schemas/air-quality-range.schema";
 import { airQualityRangeColumn } from "../../constants/air-quality-range.columns";
-type Props = {
-  data: IZodAirQualityRangeSchema[];
-  searchParams: any;
-};
-const AirQualityList = ({ data, searchParams }: Props) => {
+import { useFindAirQualityRange } from "../../hooks/use-find-air-quality-range";
+
+const AirQualityList = () => {
+  const { data, isPending, error, queryParams } = useFindAirQualityRange();
+  console.log(queryParams, "RANGE", isPending);
   return (
     <DataTable
-      key={JSON.stringify(searchParams ?? {})}
-      columns={airQualityRangeColumn}
-      data={data}
+      key={JSON.stringify(queryParams)}
       title="Calidad del Aire"
+      columns={airQualityRangeColumn}
+      data={data?.data || []}
+      isLoading={isPending}
+      error={error}
     />
   );
 };
