@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import HeaderFiler from "@/modules/dashboard/components/header-filters";
+import HeaderFiler from "@/modules/dashboard/components/header-filters/header-filters";
 import { AirQualitySummaryAsync } from "@/modules/dashboard/components/air-quality-summary/air-quality-summary-async";
 import { AirQualitySummarySkeleton } from "@/modules/dashboard/components/air-quality-summary/air-quality-summary-skeleton";
 import AirQualityHistogram from "@/modules/dashboard/components/air-quality-histogram/air-quality-histogram";

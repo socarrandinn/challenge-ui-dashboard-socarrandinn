@@ -25,7 +25,6 @@ export function FieldSelectFilter({ filter, title }: FilterProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
 
-  // Memoizar el valor inicial para evitar recálculos innecesarios
   const initialValue = useMemo(() => {
     if (filter?.key) {
       const paramValue = searchParams.get(filter.key);
@@ -41,7 +40,6 @@ export function FieldSelectFilter({ filter, title }: FilterProps) {
 
   const [selectedValue, setSelectedValue] = useState<string>(initialValue);
 
-  // Optimizar la actualización de parámetros
   const updateSelectParams = useCallback(
     (newValue: string) => {
       startTransition(() => {
@@ -55,7 +53,6 @@ export function FieldSelectFilter({ filter, title }: FilterProps) {
           }
         }
 
-        // Usar router.replace con shallow routing para mejor rendimiento
         const newUrl = `${pathname}${
           params.toString() ? `?${params.toString()}` : ""
         }`;
@@ -65,7 +62,6 @@ export function FieldSelectFilter({ filter, title }: FilterProps) {
     [searchParams, filter.key, filter?.defaultValue, router, pathname]
   );
 
-  // Sincronizar con cambios externos en searchParams
   useEffect(() => {
     const currentValue =
       searchParams.get(filter?.key || "") || filter?.defaultValue || "";
@@ -76,15 +72,12 @@ export function FieldSelectFilter({ filter, title }: FilterProps) {
 
   const handleValueChange = useCallback(
     (newValue: string) => {
-      // Actualizar el estado local inmediatamente para UX responsiva
       setSelectedValue(newValue);
-      // Actualizar la URL de forma asíncrona
       updateSelectParams(newValue);
     },
     [updateSelectParams]
   );
 
-  // Memoizar la etiqueta seleccionada
   const selectedLabel = useMemo(() => {
     const selectedOption = filter?.options?.find(
       (option) => option.value === selectedValue

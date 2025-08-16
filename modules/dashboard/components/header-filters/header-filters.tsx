@@ -3,7 +3,12 @@ import { FieldDateRangeFilter } from "@/components/core/filters/field-date-range
 import { FieldSelectFilter } from "@/components/core/filters/field-select-filter";
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { FILTER_TYPE_ENUM } from "@/interfaces/table-filters.interfaces";
-import { INTERVALS_ENUM, OPERATORS_ENUM } from "../constants/air-quality.enum";
+import {
+  INTERVALS_ENUM,
+  OPERATORS_ENUM,
+} from "../../constants/air-quality.enum";
+import { Suspense } from "react";
+import { HeaderFiltersSkeleton } from "./header-filters-skeleton";
 
 const HeaderFiler = () => {
   const OPTIONS = [
@@ -26,33 +31,35 @@ const HeaderFiler = () => {
           <CardTitle className="font-light">Calidad de aire</CardTitle>
         </CardContent>
         <CardContent className="flex flex-row gap-2 items-center flex-wrap px-4 md:px-6">
-          <FieldDateRangeFilter
-            title="Rango"
-            filter={{
-              key: "range",
-              type: FILTER_TYPE_ENUM.RANGE,
-            }}
-          />
-          <FieldSelectFilter
-            title="Intervalo"
-            filter={{
-              key: "interval",
-              type: FILTER_TYPE_ENUM.FIXED_LIST,
-              options: INTERVAL_OPTIONS,
-              defaultValue: INTERVALS_ENUM.DAILY,
-              placeholder: "Intervalo",
-            }}
-          />
-          <FieldSelectFilter
-            title="Operador"
-            filter={{
-              key: "operator",
-              type: FILTER_TYPE_ENUM.FIXED_LIST,
-              options: OPTIONS,
-              defaultValue: OPERATORS_ENUM.MAX,
-              placeholder: "Seleccione el operador",
-            }}
-          />
+          <Suspense fallback={<HeaderFiltersSkeleton />}>
+            <FieldDateRangeFilter
+              title="Rango"
+              filter={{
+                key: "range",
+                type: FILTER_TYPE_ENUM.RANGE,
+              }}
+            />
+            <FieldSelectFilter
+              title="Intervalo"
+              filter={{
+                key: "interval",
+                type: FILTER_TYPE_ENUM.FIXED_LIST,
+                options: INTERVAL_OPTIONS,
+                defaultValue: INTERVALS_ENUM.DAILY,
+                placeholder: "Intervalo",
+              }}
+            />
+            <FieldSelectFilter
+              title="Operador"
+              filter={{
+                key: "operator",
+                type: FILTER_TYPE_ENUM.FIXED_LIST,
+                options: OPTIONS,
+                defaultValue: OPERATORS_ENUM.MAX,
+                placeholder: "Seleccione el operador",
+              }}
+            />
+          </Suspense>
         </CardContent>
       </Card>
     </header>
