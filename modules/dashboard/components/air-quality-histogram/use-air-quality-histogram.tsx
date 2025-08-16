@@ -103,6 +103,16 @@ const useAirQualityHistogram = () => {
       fill: {
         type: "gradient",
         colors: ["var(--primary)"],
+        gradient: {
+          shade: theme === "dark" ? "dark" : "light",
+          type: "vertical",
+          shadeIntensity: 0.5,
+          gradientToColors: ["var(--primary)"],
+          inverseColors: false,
+          opacityFrom: 0.8,
+          opacityTo: 0.2,
+          stops: [0, 100],
+        },
       },
     }),
     [theme, labels, interval]
