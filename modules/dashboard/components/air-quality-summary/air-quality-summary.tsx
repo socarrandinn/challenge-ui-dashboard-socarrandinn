@@ -67,7 +67,7 @@ export const AirQualitySummary = ({ summary, operator, isLoading }: Props) => {
           />
           <Label htmlFor={`${id}-${key}`} className="cursor-pointer">
             {isLoading ? (
-              <SkeletonItem />
+              <SkeletonCardItem />
             ) : (
               <div className="flex grow items-start gap-3">
                 <AirVentIcon className="w-3 h-3 sm:w-5 sm:h-5" />
@@ -88,7 +88,7 @@ export const AirQualitySummary = ({ summary, operator, isLoading }: Props) => {
   );
 };
 
-const SkeletonItem = () => (
+export const SkeletonCardItem = () => (
   <div className="flex grow items-start gap-3">
     <Skeleton className="h-5 w-5 bg-muted" />
     <div className="grid grow gap-1">

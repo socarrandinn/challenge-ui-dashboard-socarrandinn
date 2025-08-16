@@ -24,14 +24,14 @@ const useAirQualityHistogram = () => {
   const { air } = useMemo(() => {
     const air: number[] = [];
 
-    data?.data?.forEach((n: IAirQualityTimeLine) => {
-      air.push(n?.count);
+    data?.data?.forEach((n: any) => {
+      air.push(n?.[parameter ?? "count"]);
     });
 
     return {
       air,
     };
-  }, [data]);
+  }, [data?.data, parameter]);
 
   const labels = useMemo(() => {
     return (
@@ -60,7 +60,7 @@ const useAirQualityHistogram = () => {
         align: "left",
         style: {
           fontSize: 20,
-          color: 'var(--background)',
+          color: "var(--background)",
         },
       },
       chart: {
@@ -76,7 +76,7 @@ const useAirQualityHistogram = () => {
         forceNiceScale: true,
         labels: {
           style: {
-            colors:"var(--foreground)",
+            colors: ["var(--foreground)"],
           },
           formatter: (value: number) => value,
         },
@@ -86,7 +86,7 @@ const useAirQualityHistogram = () => {
         ...(xaxisConfig[interval as string] || { type: "datetime" }),
         labels: {
           style: {
-            colors: "var(--foreground)",
+            colors: ["var(--foreground)"],
           },
         },
       },
@@ -98,6 +98,11 @@ const useAirQualityHistogram = () => {
           colors: ["var(--primary)"],
         },
         formatter: (value: number) => value,
+      },
+
+      fill: {
+        type: "gradient",
+        colors: ["var(--primary)"],
       },
     }),
     [theme, labels, interval]
