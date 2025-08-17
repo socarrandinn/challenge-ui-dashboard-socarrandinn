@@ -12,14 +12,19 @@ import {
 import { Button } from "@/components/ui/button";
 import DateValue from "@/components/core/format-value/date-value";
 import { VALUES_KEY_LABELS } from "./air-quality.enum";
+import AirQualityValue from "../components/air-quality-value/air-quality-value";
+import { IAirQualitySummary } from "@/interfaces/air-quality.interface";
 
 const airColumns = Object?.entries(VALUES_KEY_LABELS)?.map(([key, value]) => ({
   accessorKey: key,
   header: value.label,
   enableSorting: false,
   cell: ({ row }) => {
-    // @ts-ignore
-    return <>{(row.original[key] as number) ?? 0}</>;
+    return (
+      <AirQualityValue
+        value={row.original[key as keyof IAirQualitySummary] || 0}
+      />
+    );
   },
 })) as ColumnDef<IZodAirQualityRangeSchema>[];
 

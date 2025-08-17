@@ -32,3 +32,15 @@ export const VALUES_KEY_LABELS: Record<
   RH: { label: "RH" },
   AH: { label: "AH" },
 };
+
+export const INTERVAL_OPTIONS = [
+  { value: INTERVALS_ENUM.DAILY, label: "Diario" },
+  { value: INTERVALS_ENUM.MONTHLY, label: "Mensual" },
+  { value: INTERVALS_ENUM.YEARLY, label: "Anual" },
+];
+
+export const OPERATORS_OPTIONS = [
+  { value: OPERATORS_ENUM.MAX, label: "Máximo" },
+  { value: OPERATORS_ENUM.MIN, label: "Mínimo" },
+  { value: OPERATORS_ENUM.AVG, label: "Promedio" },
+];
