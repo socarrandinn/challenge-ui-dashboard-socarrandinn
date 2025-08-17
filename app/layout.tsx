@@ -1,4 +1,4 @@
-import type { Metadata, Viewport } from "next";
+import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./css/globals.css";
 import AppProvider from "@/providers/app.provider";
@@ -6,7 +6,7 @@ import AppProvider from "@/providers/app.provider";
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
-  display: "swap", // Mejora el rendimiento de carga de fuentes
+  display: "swap",
 });
 
 const geistMono = Geist_Mono({
@@ -15,26 +15,12 @@ const geistMono = Geist_Mono({
   display: "swap",
 });
 
-export const viewport: Viewport = {
-  width: "device-width",
-  initialScale: 1,
-  maximumScale: 1,
-  userScalable: false,
-  themeColor: "#ffffff",
-};
-
 export const metadata: Metadata = {
   title: "Dashboard APP",
   description: "Dashboard APP - Panel de control y análisis de datos",
   generator: "Next.js",
   applicationName: "Dashboard APP",
-
   keywords: ["dashboard", "panel de control", "análisis", "datos", "métricas"],
-  authors: [{ name: "Tu Empresa" }],
-  creator: "Tu Empresa",
-  publisher: "Tu Empresa",
-
-  // Configuración específica para español
   alternates: {
     canonical: "/",
     languages: {
@@ -65,6 +51,10 @@ export const metadata: Metadata = {
     images: ["/opengraph-image.png"],
   },
 
+  other: {
+    google: "noTranslate",
+  },
+
   robots: {
     index: true,
     follow: true,
@@ -76,9 +66,6 @@ export const metadata: Metadata = {
       "max-snippet": -1,
     },
   },
-
-  // Configuración adicional
-  category: "technology",
 };
 
 export default function RootLayout({
