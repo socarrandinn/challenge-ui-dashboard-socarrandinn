@@ -10,9 +10,9 @@ type Props = {
 const AirQualityOperatorValue = ({ operator, value, className }: Props) => {
   switch (operator) {
     case OPERATORS_ENUM.MIN:
-      return <span className={cn("text-red-400", className)}>{value}</span>;
+      return <span className={cn("text-red-500", className)}>{value}</span>;
     case OPERATORS_ENUM.MAX:
-      return <span className={cn("text-green-400", className)}>{value}</span>;
+      return <span className={cn("text-shadow-emerald-500", className)}>{value}</span>;
     case OPERATORS_ENUM.AVG:
       return <span className={cn(className)}>{value.toFixed(2)}%</span>;
     default:

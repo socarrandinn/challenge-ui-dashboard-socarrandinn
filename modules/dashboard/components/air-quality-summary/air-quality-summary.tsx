@@ -76,7 +76,7 @@ export const AirQualitySummary = ({ summary, operator, isLoading }: Props) => {
                   <AirQualityOperatorValue
                     value={summary?.[key as keyof IAirQualitySummary] || 0}
                     operator={operator}
-                    className="text-md md:text-xl font-bold"
+                    className="text-md md:text-xl font-medium"
                   />
                 </div>
               </div>
