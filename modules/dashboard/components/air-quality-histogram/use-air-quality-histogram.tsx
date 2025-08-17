@@ -64,9 +64,12 @@ const useAirQualityHistogram = () => {
         },
       },
       chart: {
+        selection: { enabled: false },
         zoom: {
           enabled: true,
+          autoScaleYaxis: false,
           allowMouseWheelZoom: false,
+          type: "x",
         },
         id: "histogram-air-quality",
         toolbar: {
